@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_ResCats" title="[⌂] Resource Categories" version_string="1.0.0" version_id="1447261019" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_LoadClass" callback_method="loadClassController" active="0" hint="XenResource_ControllerPublic_Resource" description="XenResource_ControllerPublic_Resource (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_LoadClass" callback_method="loadClassHelper" active="0" hint="XenResource_ControllerHelper_Resource" description="XenResource_ControllerHelper_Resource (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenResource_Model_Category" description="XenResource_Model_Category (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_LoadClass" callback_method="loadClassController" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_helper" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_LoadClass" callback_method="loadClassHelper" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="ThemeHouse_ResCats_Listener_LoadClass" callback_method="loadClassModel" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="resource" permission_id="addCategory" permission_type="flag" default_value="unset" interface_group_id="resourceCategoryPermissions" display_order="1"/>
+      <permission permission_group_id="resource" permission_id="deleteCategory" permission_type="flag" default_value="unset" interface_group_id="resourceCategoryPermissions" display_order="20"/>
+      <permission permission_group_id="resource" permission_id="editCategory" permission_type="flag" default_value="unset" interface_group_id="resourceCategoryPermissions" display_order="10"/>
+    </permissions>
+    <interface_groups>
+      <interface_group interface_group_id="resourceCategoryPermissions" display_order="502"/>
+    </interface_groups>
+  </permissions>
+  <phrases>
+    <phrase title="permission_interface_resourceCategoryPermissions" version_id="1421245622" version_string="1.0.0"><![CDATA[Resource Category Permissions]]></phrase>
+    <phrase title="permission_resource_addCategory" version_id="1421245622" version_string="1.0.0"><![CDATA[Add resource category]]></phrase>
+    <phrase title="permission_resource_deleteCategory" version_id="1421255497" version_string="1.0.0"><![CDATA[Delete resource category]]></phrase>
+    <phrase title="permission_resource_editCategory" version_id="1421245622" version_string="1.0.0"><![CDATA[Edit resource category]]></phrase>
+    <phrase title="th_category_tools_rescats" version_id="1421245622" version_string="1.0.0"><![CDATA[Category Tools]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="th_category_tools_rescats" version_id="1421245622" version_string="1.0.0"><![CDATA[<xen:if hascontent="true">
+	<div class="Popup">
+		<a rel="Menu">{xen:phrase th_category_tools_rescats}</a>
+		<div class="Menu">
+		<xen:contentcheck>
+			<xen:if hascontent="true">
+			<div class="primaryContent menuHeader"><h3>{xen:phrase th_category_tools_rescats}</h3></div>
+			<ul class="secondaryContent blockLinksList">
+				<xen:contentcheck>
+					<xen:if is="{$canAddCategory}">
+						<li><a href="{xen:link 'resources/categories/add', $category}">{xen:phrase create_new_category}</a></li>
+					</xen:if>
+					<xen:if is="{$canEditCategory}">
+						<li><a href="{xen:link 'resources/categories/edit', $category}">{xen:phrase edit_category}</a></li>
+					</xen:if>
+					<xen:if is="{$canDeleteCategory}">
+						<li><a href="{xen:link 'resources/categories/delete', $category}" class="OverlayTrigger">{xen:phrase delete_category}</a></li>
+					</xen:if>
+				</xen:contentcheck>
+			</ul>
+			</xen:if>
+		</xen:contentcheck>
+		</div>
+	</div>
+</xen:if>]]></template>
+    <template title="th_resource_category_add_rescats" version_id="1421255497" version_string="1.0.0"><![CDATA[<xen:title>{xen:if $category.resource_category_id, '{xen:phrase edit_category}: {$category.category_title}', '{xen:phrase create_new_category}'}</xen:title>
+
+<xen:if is="{$categoryBreadcrumbs}">
+	<xen:navigation>
+		<xen:breadcrumb source="$categoryBreadcrumbs" />
+	</xen:navigation>
+</xen:if>
+
+<form action="{xen:link 'resources/categories/save', $category}" method="post" class="xenForm AutoValidator"
+	data-redirect="on">
+
+	<fieldset>
+		<dl class="ctrlUnit titleUnit">
+			<dt><label for="ctrl_category_title">{xen:phrase title}:</label></dt>
+			<dd>
+				<input type="text" name="category_title" value="{$category.category_title}" class="textCtrl"
+					data-liveTitleTemplate="{xen:if $category.category_title, '{xen:phrase edit_category}', '{xen:phrase create_new_category}'}: <em>%s</em>"
+					id="ctrl_category_title"
+				/>
+			</dd>
+		</dl>
+		
+		<dl class="ctrlUnit">
+			<dt><label for="ctrl_category_description">{xen:phrase description}:</label></dt>
+			<dd>
+				{xen:raw $descriptionEditor}
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<dl class="ctrlUnit">
+			<dt><label for="ctrl_display_order">{xen:phrase display_order}:</label></dt>
+			<dd>
+				<input type="number" name="display_order" value="{$category.display_order}" step="1" min="0" class="textCtrl" id="ctrl_display_order" autocomplete="off" />
+			</dd>
+		</dl>
+	</fieldset>
+
+
+	<fieldset>
+		<dl class="ctrlUnit">
+			<dt>{xen:phrase allowed_resource_types}:</dt>
+			<dd>
+				<ul>
+				<li><label for="ctrl_allow_local_1"><input type="checkbox" name="allow_local" value="1" id="ctrl_allow_local_1"{xen:checked {$category.allow_local}}> {xen:phrase uploaded_file}</label></li>
+				<li><label for="ctrl_allow_external_1"><input type="checkbox" name="allow_external" value="1" id="ctrl_allow_external_1"{xen:checked {$category.allow_external}}> {xen:phrase external_download_url}</label></li>
+				<li><label for="ctrl_allow_commercial_external_1"><input type="checkbox" name="allow_commercial_external" value="1" id="ctrl_allow_commercial_external_1"{xen:checked {$category.allow_commercial_external}}> {xen:phrase external_purchase_and_download}</label></li>
+				<li><label for="ctrl_allow_fileless_1"><input type="checkbox" name="allow_fileless" value="1" id="ctrl_allow_fileless_1"{xen:checked {$category.allow_fileless}}> Does not have a file</label></li>
+				</ul>
+				<p class="explain">{xen:phrase if_no_resource_types_selected_category_used_maintain_hierachy_onle}</p>
+			</dd>
+		</dl>
+
+		<dl class="ctrlUnit">
+			<dt></dt>
+			<dd>
+				<ul>
+				<li><label for="ctrl_always_moderate_create_1"><input type="checkbox" name="always_moderate_create" value="1" id="ctrl_always_moderate_create_1"{xen:checked {$category.always_moderate_create}}> {xen:phrase always_moderate_resources_posted_in_this_category}</label></li>
+				<li><label for="ctrl_always_moderate_update_1"><input type="checkbox" name="always_moderate_update" value="1" id="ctrl_always_moderate_update_1"{xen:checked {$category.always_moderate_update}}> {xen:phrase always_moderate_updates_in_this_category}</label></li>
+				</ul>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<dl class="ctrlUnit">
+			<dt>{xen:phrase automatically_create_thread_in_forum}:</dt>
+			<dd>
+				<select name="thread_node_id" class="textCtrl" id="ctrl_node_id">
+					<option value="">&nbsp;</option>
+					<xen:foreach loop="$nodes" value="$node">
+						<option value="{$node.node_id}" {xen:selected '{$node.node_id} == {$category.thread_node_id}'} {xen:if "{$node.node_type_id} != 'Forum'", 'disabled="disabled"'}>{xen:string repeat, '&nbsp; ', $node.depth}{$node.title}</option>
+					</xen:foreach>
+				</select>
+				<p class="explain">{xen:phrase whenever_resource_category_created_thread_posted}</p>
+			</dd>
+		</dl>
+		
+		<div id="PrefixContainer">
+			<xen:require css="title_prefix_edit.css" />
+			<xen:require css="thread_prefixes.css" />
+			<xen:require js="js/xenforo/title_prefix.js" />
+			<dl class="ctrlUnit">
+				<dt><label for="ctrl_thread_prefix_id">{xen:phrase automatically_created_thread_prefix}:</label></dt>
+				<dd>
+					<select name="thread_prefix_id" id="ctrl_prefix_id" class="textCtrl TitlePrefix"
+						data-nodecontrol="#ctrl_node_id"
+						data-prefixurl="{xen:link forums/-/prefixes}">
+						<xen:include template="title_prefix_edit_options">
+							<xen:map from="$threadPrefixes" to="$prefixes" />
+							<xen:set var="$selectedPrefix">{$category.thread_prefix_id}</xen:set>
+						</xen:include>
+					</select>
+				</dd>
+			</dl>
+		</div>
+	</fieldset>
+	
+	<xen:if is="{$fieldsGrouped}">
+		<fieldset>
+			<dl class="ctrlUnit multiple checkboxColumns AvailableFields">
+				<dt>{xen:phrase available_fields}: <dfn><br><label><input type="checkbox" class="CheckAll" data-target="dl.AvailableFields"> {xen:phrase select_all}</label></dfn></dt>
+				<dd>
+					<ul>
+						<xen:foreach loop="$fieldGroups" key="$groupId" value="$label">
+							<xen:if is="{$fieldsGrouped.{$groupId}}">
+								<xen:foreach loop="{$fieldsGrouped.{$groupId}}" value="$field">
+									<li><label for="ctrl_available_fields_{$field.field_id}"><input type="checkbox" name="available_fields[]" value="{$field.field_id}" id="ctrl_available_fields_{$field.field_id}" {xen:checked 'in_array({$field.field_id}, {$selectedFields})'}> {$field.title}</label></li>
+								</xen:foreach>
+							</xen:if>
+						</xen:foreach>
+					</ul>
+				</dd>
+			</dl>
+		</fieldset>
+	</xen:if>
+		
+	<fieldset>
+		<dl class="ctrlUnit multiple checkboxColumns AvailablePrefixes">
+			<dt>{xen:phrase available_prefixes}: <dfn><br><label><input type="checkbox" class="CheckAll" data-target="dl.AvailablePrefixes"> {xen:phrase select_all}</label></dfn></dt>
+			<dd>
+				<ul>
+					<xen:foreach loop="$prefixOptions" key="$prefixGroupId" value="$prefixes">
+						<xen:foreach loop="$prefixes" key="$prefixId" value="$prefix">
+							<li><label for="ctrl_available_prefixes_{$prefixId}"><input type="checkbox" name="available_prefixes[]" value="{$prefixId}" id="ctrl_available_prefixes_{$prefixId}" {xen:checked 'in_array({$prefixId}, {$categoryPrefixes})'}> {$prefix.label}</label></li>
+						</xen:foreach>
+					</xen:foreach>
+				</ul>
+			</dd>
+		</dl>
+		<dl class="ctrlUnit">
+			<dt></dt>
+			<dd>
+				<ul>
+					<li>
+						<label for="ctrl_require_prefix_1"><input type="checkbox" name="require_prefix" value="1" id="ctrl_require_prefix_1"> {xen:phrase require_users_to_select_prefix}</label>
+						<p class="hint">{xen:phrase if_selected_users_required_select_prefix_for_thread}</p>
+					</li>
+				</ul>
+			</dd>
+		</dl>
+	</fieldset>
+	
+	<input type="hidden" name="parent_category_id" value="{$parentCategory.resource_category_id}" />
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd>
+			<input type="submit" value="{xen:phrase save_category}" accesskey="s" class="button primary" />
+		</dd>
+	</dl>
+	
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+  </templates>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_resCats" description="Copyright notice for [⌂] Resource Categories" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+    <modification template="resource_category" modification_key="th_resourceCategory_resCats" description="Adds 'Category Tools' menu to category." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<div class="pageNavLinkGroup.*>\s*<div class="linkGroup SelectionCountContainer.*>\s*<xen:contentcheck>.*)(</xen:contentcheck>.*<xen:include template="resource_helper_filters">)#Us]]></find>
+      <replace><![CDATA[${1}
+	<xen:include template="th_category_tools_rescats" />
+${2}]]></replace>
+    </modification>
+    <modification template="resource_index" modification_key="th_resourceIndex_resCats" description="Adds 'Category Tools' menu to index." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<xen:include template="resource_helper_filters">#]]></find>
+      <replace><![CDATA[<div class="pageNavLinkGroup">
+	<div class="linkGroup SelectionCountContainer">
+		<xen:include template="th_category_tools_rescats" />
+	</div>
+</div>
+${0}]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
